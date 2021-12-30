@@ -1,0 +1,29 @@
+{
+	"folders": [
+    {
+      "path": "repo/piccsim"
+    },
+    {
+      "path": "repo/exotargets"
+    },
+    {
+      "path": "repo/cbmidl"
+    },
+    {
+      "path": "repo/proper"
+    },
+    {
+      "path": "end2end"
+    },
+    {
+      "path": "scratch"
+    },
+    {
+      "path": "repo/zodipic"
+    },
+    {
+      "path": "tpidl"
+    }
+  ],
+	"settings": {}
+}
