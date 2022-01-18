@@ -19,6 +19,7 @@ print, 'loading packages ...'
   expand_path('~/idl/repo/ephemeris/') + ':' + $
   expand_path('~/idl/repo/exotargets/') + ':' + $
   expand_path('~/idl/repo/exotargets/old/') + ':' + $
+  expand_path('~/idl/repo/IDL_RIT_Salvaggio/') + ':' + $
   expand_path('~/idl/repo/khidl/') + ':' + $
   expand_path('~/idl/repo/khidl/kh_coyote/') + ':' + $
   expand_path('~/idl/repo/morisset/') + ':' + $
@@ -35,6 +36,7 @@ print, 'loading packages ...'
   expand_path('~/idl/repo/tdemidl/piaa/') + ':' + $
   expand_path('~/idl/repo/textoidl/') + ':' + $
   expand_path('~/idl/repo/zodipic/')
+  
 
 paths = strsplit(!PATH, /extract, ':')
 ;foreach path, paths, index do print,'['+n2s(index,format='(I02)')+'] : '+path
