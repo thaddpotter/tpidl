@@ -1,47 +1,27 @@
-function fit_conic,data
+function total_dist, in
+    ;Calculates the total square distance from a set of points to a conic surface
 
-    ;Fits a circular paraboloid to a set of 3-D points
+    ;Import/initialize variables
+    COMMON opt_points, data
+    r = in[0]
+    k = in[1]
 
-    ;-----------------------------------------------------------------------
-    ;Parabola Parameterization: 6 DOF
-        ;Vertex - (x0,y0,z0)
-        ;Radial Coefficient - r
-        ;Rotation Angles about x,z - u,w
-    ;NOTE: Displacement is applied to the parabola, then is rotated about x, then about z
+    sz = size(data)
 
-    ;Args:
-        ;data - 3xN matrix containing the coordinates of the points to fit to
+    total = 0d
 
-    ;Returns
-        ;out - vector of parabola parameters [x0,y0,z0,r,u,w]
-    ;-----------------------------------------------------------------------
+    ;Find square distance for each point and add to total distance
+    for j = 0, sz[2]-1 do begin
+        tmp = calc_dist(data[*,j],r,k)
+        total += tmp
+    endfor
 
-    ;Get initial guess
-    p = dblarr(1)
-    p = 1
-    ;p[0] = [0,0,0]              ;Vertex
-    ;p[3] = [0.1]                ;Radial
-    ;p[4] = [0,0]                ;Rotation Angles
-
-    xi = IDENTITY(1)            ;Initial Guess Vector
-    ftol = 1.0e-8               ;Tolerance
-
-    powell, p, xi, ftol, fmin, 'par_dist',itmax=1000 
-
-    print, p
-    print, fmin
-    
-    return, p
-end
-
-function paraboloid, x,y,r
-    return, (1/r^2)*(x^2 + y^2)
+    return, total
 end
 
 pro test_conic
 
-    common par_block, testdata
-    ;Create a list of x and y values (n x n)
+    ;Create a list of x and y values for a grid (n x n)
     n = 11.
     min = -10.
     max = 10.
@@ -55,16 +35,24 @@ pro test_conic
         y[i] = (max-min) * (row/(n-1)) + min
     endfor
 
-    ;Input Parameters
-    x0 = 1.
-    y0 = 2.
-    z0 = 3.
-    r = 5.
+    ;Get z height values (with a bit of noise)
+    z = conic_z(x,y,50,0) + 0.1*RANDOMU(seed,n^2)
 
-    z = paraboloid(x,y,r)
+    ;Initialize common block
+    COMMON opt_points, data
+    data = [x,y,z]
 
-    testdata = [x,y,z]
+    print, total_dist([50,1])
+    print, total_dist([50,0])
 
-    sol = fit_conic(testdata)
+    ;Setup
+    ftol = 1e-4
+    x = [1d,0d]
+    xi = IDENTITY(2)
+
+    POWELL, x, xi, ftol, fmin, 'total_dist'
+    print, 'Least squared Distance: '+ ns2(fmin)
+    print, 'ROC: ' +n2s(x[0])
+    print, 'K: ' +n2s(x[1])
 
 end
