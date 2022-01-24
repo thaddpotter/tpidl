@@ -1,22 +1,3 @@
-function total_dist, in
-    ;Calculates the total square distance from a set of points to a conic surface
-
-    ;Import/initialize variables
-    COMMON opt_points, data
-    r = in[0]
-    k = in[1]
-
-    sz = size(data)
-
-    total = 0d
-
-    for j = 0, sz[2]-1 do begin
-        total += calc_dist(data[*,j],r,k)   ;Find square distance for each point, Add to total distance
-    endfor
-
-    return, total
-end
-
 pro test_conic
     ;Create a list of x and y values for a grid (n x n)
     n = 10.
@@ -43,7 +24,7 @@ pro test_conic
     vec = [80.0,0.0]                      ;Initial guess
     xbnd = [[0.0 ,-5.0], $              ;Limits on R, K:
             [1e30, 5.0]]                ;R > 0, -5 < K < 5     
-            
+
     gbnd = [0.0,0.0]                    ;Unbounded objective function
     nobj = 0                            ;Index of objective function
     epstop = 1e-5                       ;Convergence Criteria
@@ -57,9 +38,9 @@ pro test_conic
         stop
     endif
 
-    CONSTRAINED_MIN, vec, xbnd, gbnd, nobj, 'total_dist', inform,EPSTOP=epstop ;,REPORT=report
+    CONSTRAINED_MIN, vec, xbnd, gbnd, nobj, 'conic_min_func', inform,EPSTOP=epstop ;,REPORT=report
 
-    d = total_dist(vec)
+    d = conic_min_func(vec)
 
     print, 'ROC: ' +n2s(vec[0])
     print, 'Conic: ' +n2s(vec[1])

@@ -25,7 +25,7 @@ function gradxy, in
     return, [-2 * (x1 + x2*(f2-1)), -2 * (y1 + y2*(f2-1))]
 end
 
-function calc_dist, point, rad, conic
+function conic_min_dist, point, rad, conic
     ;Calculates the minimum square distance from a point to a given conic surface
 
     ;Arguments:
