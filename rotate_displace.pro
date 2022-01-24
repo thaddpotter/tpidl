@@ -8,7 +8,7 @@ function rotate_displace, input, angleX, angleY, angleZ, disp, inverse=inverse
     ;r0 -> Displacement vector
 
     ;Arguments:
-    ;input - N x 3 Array of Coordinates to be rotated and displaced (each point is a column vector)
+    ;input - 3 x N Array of Coordinates to be rotated and displaced (each point is a row vector)
     ;angleX - rotation angle about x (Degrees)
     ;angleY - rotation angle about y (Degrees)
     ;angleZ - rotation angle about z (Degrees)
@@ -23,9 +23,9 @@ function rotate_displace, input, angleX, angleY, angleZ, disp, inverse=inverse
     ;------------------------------------------------------------------------------
 
     ;Convert to radians
-    phi = angleX * !DTOR
-    theta = angleY * !DTOR
-    psi = angleZ * !DTOR
+    a = angleX * !DTOR
+    b = angleY * !DTOR
+    c = angleZ * !DTOR
 
     ;Make rotation matrices for axes
     Rx = [[1,     0,      0],$
@@ -42,7 +42,7 @@ function rotate_displace, input, angleX, angleY, angleZ, disp, inverse=inverse
 
     ;Make shift matrix
     sz = size(input)
-    shift = rebin(reform(disp,1,3),sz[1],3)
+    shift = rebin(disp,3,sz[2])
 
     ;Forward Operation
     if ~keyword_set(inverse) then begin

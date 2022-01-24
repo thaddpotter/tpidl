@@ -1,17 +1,24 @@
 function conic_min_func, in
-    ;Calculates the total square distance from a set of points to a conic surface
+    ;Calculates the total square distance from a set of points to a rotated and displaced conic surface
 
     ;Import/initialize variables
-    COMMON opt_points, data
-    r = in[0]
-    k = in[1]
+    COMMON conic_opt,r,k,data
+    
+    angleX = in[0]
+    angleZ = in[1]
+    X = in[2]
+    Y = in[3]
+    Z = in[4]
 
     sz = size(data)
 
-    total = 0d
+    ;Displace/Rotate points backwards to meet the conic
+    tmp = rotate_displace(data,angleX,0.0,angleZ,[X,Y,Z],/INVERSE)
 
+    ;Loop over datapoints, calculate total of square distances
+    total = 0d
     for j = 0, sz[2]-1 do begin
-        total += conic_min_dist(data[*,j],r,k)   ;Find square distance for each point, Add to total distance
+        total += conic_min_dist(tmp[*,j])
     endfor
 
     return, total

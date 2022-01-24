@@ -2,7 +2,9 @@ function conic_dist, in
     ;Calculates square of distance between two points, one of which is located on a conic surface
     ;Arguments: In -> [x2,y2] X and Y Coordinates of the point on the parabola
     ;Returns: Squared distance between two points
-    COMMON dist_opt, x1,y1,z1,r,k
+    COMMON dist_opt,x1,y1,z1
+    COMMON conic_opt,r,k
+
     x2 = in[0]
     y2 = in[1]
 
@@ -13,19 +15,20 @@ function gradxy, in
     ;Calculates the gradient of the square distance with respect to X and Y coordinates of the point on conic surface
     ;Arguments: In -> [x2,y2] X and Y Coordinates of the point on the parabola
     ;Returns: [gradx, grady] -> Partial derivatives with respect to x2, y2
-    COMMON dist_opt, x1,y1,z1,r,k
+    COMMON dist_opt,x1,y1,z1
+    COMMON conic_opt,r,k
+
     x2 = in[0]
     y2 = in[1]
 
     r2 = x2^2 + y2^2
-
     f1 = sqrt(r^2 - (1+k)*r2)
-
     f2 = (z1 - r2/( r + f1 )) / f1
+
     return, [-2 * (x1 + x2*(f2-1)), -2 * (y1 + y2*(f2-1))]
 end
 
-function conic_min_dist, point, rad, conic
+function conic_min_dist, point
     ;Calculates the minimum square distance from a point to a given conic surface
 
     ;Arguments:
@@ -37,13 +40,11 @@ function conic_min_dist, point, rad, conic
     ;d -> minimized square distance
 
     ;Initialize and assign common block variables
-    COMMON dist_opt, x,y,z,r,k
+    COMMON dist_opt, x,y,z
 
     x = DOUBLE(point[0])
     y = DOUBLE(point[1])
     z = DOUBLE(point[2])
-    r = DOUBLE(rad)
-    k = DOUBLE(conic)
 
     ;Setup
     guess = [1d,1d] ;Initial Guess
