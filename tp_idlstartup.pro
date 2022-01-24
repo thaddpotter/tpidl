@@ -1,4 +1,8 @@
 print, 'loading packages ...'
+
+!QUIET = 1
+!except = 2
+
 !PATH = !PATH + ':' + $
   expand_path('~/idl/end2end/') + ':' + $
   expand_path('~/idl/end2end/support_functions/') + ':' + $
@@ -39,11 +43,8 @@ print, 'loading packages ...'
   
 
 paths = strsplit(!PATH, /extract, ':')
-;foreach path, paths, index do print,'['+n2s(index,format='(I02)')+'] : '+path
 print, n2s(n_elements(paths),format='(I)')+' packages loaded ...'
 delvar, path, index
-
-!QUIET = 1
 
 common _$styles, _$print_style_obj, _$web_style_obj, _$screen_style_obj, _$style_obj ; load global styles
 
