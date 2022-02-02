@@ -20,6 +20,7 @@ print, 'loading packages ...'
   expand_path('~/idl/repo/cbmidl/sptype/') + ':' + $
   expand_path('~/idl/repo/coyote/') + ':' + $
   expand_path('~/idl/repo/coyote/public/') + ':' + $
+  expand_path('~/idl/repo/displacement_example/') + ':' + $
   expand_path('~/idl/repo/ephemeris/') + ':' + $
   expand_path('~/idl/repo/exotargets/') + ':' + $
   expand_path('~/idl/repo/exotargets/old/') + ':' + $
