@@ -26,6 +26,10 @@ function fit_zernike, points
     ;Get singular values of zernike matrix
     SVDC, zern_mat, w, u, v, /DOUBLE 
 
+    ;Regularization
+    ind = where(ABS(w) LE 1.0e-5)
+    w[ind] = 0
+
     ;Solve for coefficients
     coeff = svsol(u, w, v, z, /DOUBLE)
 
