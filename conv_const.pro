@@ -1,4 +1,4 @@
-pro conv_const, pressure, temp_obj, temp_env, length, geom=geom, h=h
+function conv_const, pressure, temp_obj, temp_env, length, geom=geom,quiet=quiet
 
 ;;Calculates the convective heat transfer coefficient for an object
 ;------------------------------------------------------------------
@@ -12,7 +12,6 @@ pro conv_const, pressure, temp_obj, temp_env, length, geom=geom, h=h
 ;;  'cylinder' - Vertical Cylinder
 ;;  'horiz_plate' - Horizontal Plate
 ;;  'horiz_cylinder' - Horizontal Cylinder
-;;h - Keyword return for convective constant
 ;------------------------------------------------------------------
 ;;Assumptions:
 ;;Ideal Gas Law as predictor of density, ... 
@@ -25,7 +24,7 @@ pro conv_const, pressure, temp_obj, temp_env, length, geom=geom, h=h
 ;;h - convective heat transfer coefficient (W/m^2/K)
 ;-------------------------------------------------------------------
 ;;Error Analysis:
-;;Used Data from Engineering Tollbox, Omnicalculator, looking at temperature and pressure dependance seperately due to availability of data
+;;Used Data from Engineering Toolbox, Omnicalculator, looking at temperature and pressure dependance seperately due to availability of data
 ;;rho - +/- 0.3% @ -50->25 C, 1e5 -> 1e6 Pa
 ;;l -   +/- 0.02% @ 250->300 K, 1e4 -> 1e6 Pa
 ;;mu -  +/- 2% @ 250 -> 280 K, 1 bar
@@ -47,6 +46,9 @@ to = double(temp_obj)
 tenv = double(temp_env)
 l0 = double(length)
 
+n = max([n_elements(p),n_elements(to),n_elements(tenv),n_elements(l0)])
+h = dblarr(n)
+
 if keyword_set(geom) then geom = strlowcase(geom) else geom = 'vert_plate'
 
 ;;Constants
@@ -62,44 +64,46 @@ g = 9.81                            ;Acceleration from gravity (m/s^2)
 cv = 0.97*(1000/mw0)*(2.5)*r        ;Heat Capacity (J/kg K)
 cp =  cv + (1000/mw0)*r
 
+tf = (to + tenv) / 2                ;Film Temperature
+dt = to - tenv                      ;Temperature Difference
+
 ;;Get Gas Properties
 ;------------------------------------------------------------------------------------------
-rho_n = 1.0331 * p/(r*tenv) * na                  ;Number Density (1/m^3)
+rho_n = 1.0331 * p/(r*tf) * na                  ;Number Density (1/m^3)
 rho = rho_n * mw                                  ;Density (kg/m^3)
 
-l = kb*tenv/(sqrt(2)*!pi*dk^2.*p)                 ;Mean Free Path (m)
+l = kb*tf/(sqrt(2)*!pi*dk^2.*p)                 ;Mean Free Path (m)
 
-mu = 0.9139*rho*l*sqrt(2*kb*tenv/(!pi*mw))        ;Viscosity (N*s/m^2)
+mu = 0.9139*rho*l*sqrt(2*kb*tf/(!pi*mw))        ;Viscosity (N*s/m^2)
 
-k = 1.75 * rho*l*cv*sqrt(2*kb*tenv/(!pi*mw))      ;Thermal Conductivity (W/m K)
+k = 1.75 * rho*l*cv*sqrt(2*kb*tf/(!pi*mw))      ;Thermal Conductivity (W/m K)
 
 ;;Verify Gas regime
-if 10.*l GE l0 then print, 'Warning: mean free path is on the order of characteristic length!'
+if 10.*MAX(l) GE MIN(l0) then print, 'Warning: mean free path is on the order of characteristic length!'
 
 ;;Derive dimensionless quantities
 ;-------------------------------------------------------------------------------------------
 pr = 0.972 * cp * mu / k                                  ;Prandtl Number
 
 case geom of
-    'vert_plate': gr = (g/tenv)*l0^3. * (rho/mu)^2.       ;Grashof Number
-    'cylinder': gr = (g/tenv)*l0^3. * (rho/mu)^2. 
+    'vert_plate': gr = (g/tf)*l0^3. * (rho/mu)^2.       ;Grashof Number
+    'cylinder': gr = (g/tf)*l0^3. * (rho/mu)^2. 
     'horiz_plate': gr = 1       
 endcase
 
 ra = pr * gr                                              ;Rayleigh Number
 
 ;;Check flow regime
-if ra GT 1e12 then print, 'Rayleigh number greater than 10^12, laminar regime not valid'
+if MAX(ra) GT 1e12 then print, 'Rayleigh number exceeds 10^12, laminar regime not valid for all values'
+if MIN(ra) LT 1e-1 then print, 'Rayleigh number less than 1e-1, outside area of approximation'
 
 ;;Calculate convective heat transfer coefficient
 ;------------------------------------------------------------------------------------------
 case geom of
     'vert_plate': begin
-        if (ra LE 1e9) AND (ra GE 1e-1) then begin
-            h = (k/l0)*(0.825 + 0.387*ra^(1./6)/(1 + (0.492/pr)^(9./16))^(8./27))^2.
-        endif else if ra LE 1e12 then begin
-            h = (k/l0)*(0.68 + 0.67*ra^(1./4)/(1 + (0.492/pr)^(9./16))^(4./9))
-        endif
+        sel1 = where((ra LE 1e9) AND (ra GE 1e-1),count, complement=sel2, ncomplement=ncount)
+        if count GE 1 then h[sel1] = (k/l0)*(0.825 + 0.387*ra[sel1]^(1./6)/(1 + (0.492/pr)^(9./16))^(8./27))^2.
+        if ncount GE 1 then h[sel2] = (k/l0)*(0.68 + 0.67*ra[sel2]^(1./4)/(1 + (0.492/pr)^(9./16))^(4./9))
     end
     'cylinder': h = 1
     'horiz_plate': h = 1
@@ -107,11 +111,13 @@ endcase
 
 ;;Print Results
 ;---------------------------------------------------------------------------------------------
+if not keyword_set(quiet) then begin
+    print,'Pressure: '+string(p)
+    print,'Temperature of Object: '+string(to)
+    print,'Temperature of Environment: '+string(tenv)
+    print, 'Mean Free Path: '+string(l)
+    print, 'Convection Coefficient: '+string(h)
+endif
 
-print,'Pressure: '+string(p)
-print,'Temperature of Object: '+string(to)
-print,'Temperature of Environment: '+string(tenv)
-print, 'Mean Free Path: '+string(l)
-print, 'Convection Coefficient: '+string(h)
-
+return, h
 end
