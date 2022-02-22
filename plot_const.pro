@@ -12,6 +12,7 @@ l_lim = [0.01d,1d]          ;Log Scale
 p_lim = [300d,500d]           ;Torr
 
 plotpath = '~/idl/tpidl/plots/'
+check_and_mkdir, plotpath
 
 ;Set up sampling, arrays
 n = 301
