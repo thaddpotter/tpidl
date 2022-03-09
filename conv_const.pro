@@ -59,7 +59,7 @@ mw0 = 28.02                         ;Molecular Mass of Nitrogen (Da/mol)
 mw = mw0 * 1.66054d-27              ;Molecular Mass of Nitrogen (kg/mol)
 kb = 1.3806485d-23                  ;Boltzmann Constant (J/K)
 dk = 3.64d-10                       ;Kinetic diameter of N2 molecule (m)
-g = 9.81                            ;Acceleration from gravity (m/s^2)
+g = 9.80665d                        ;Acceleration from gravity (m/s^2)
 
 cv = 0.97*(1000/mw0)*(2.5)*r        ;Heat Capacity (J/kg K)
 cp =  cv + (1000/mw0)*r
@@ -75,6 +75,7 @@ rho = rho_n * mw                                  ;Density (kg/m^3)
 l = kb*tf/(sqrt(2)*!pi*dk^2.*p)                 ;Mean Free Path (m)
 
 mu = 0.9139*rho*l*sqrt(2*kb*tf/(!pi*mw))        ;Viscosity (N*s/m^2)
+nu = mu / rho                                   ;Kinemative Viscosity (m^2/s)
 
 k = 1.75 * rho*l*cv*sqrt(2*kb*tf/(!pi*mw))      ;Thermal Conductivity (W/m K)
 
@@ -86,16 +87,16 @@ if 10.*MAX(l) GE MIN(l0) then print, 'Warning: mean free path is on the order of
 pr = 0.972 * cp * mu / k                                  ;Prandtl Number
 
 case geom of
-    'vert_plate': gr = (g/tf)*l0^3. * (rho/mu)^2.       ;Grashof Number
-    'cylinder': gr = (g/tf)*l0^3. * (rho/mu)^2. 
+    'vert_plate':  gr = (g * dt)/(tf * nu^2) * l0^3      ;Grashof Number
+    'cylinder':  gr = (g * dt)/(tf * nu^2) * l0^3
     'horiz_plate': gr = 1       
 endcase
 
 ra = pr * gr                                              ;Rayleigh Number
 
 ;;Check flow regime
-if MAX(ra) GT 1e12 then print, 'Rayleigh number exceeds 10^12, laminar regime not valid for all values'
-if MIN(ra) LT 1e-1 then print, 'Rayleigh number less than 1e-1, outside area of approximation'
+if MAX(ra) GT 1e9 then print, 'Warning: Max Rayleigh No. (' + n2s(MAX(RA)) + ') > 1e9, entering turbulent regime'
+if MIN(ra) LT 1e-1 then print, 'Warning: Min Rayleigh No. (' + n2s(MIN(RA)) + ') < than 1e-1, convection becomes small'
 
 ;;Calculate convective heat transfer coefficient
 ;------------------------------------------------------------------------------------------
