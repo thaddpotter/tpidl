@@ -67,17 +67,19 @@ cp =  cv + (1000/mw0)*r
 tf = (to + tenv) / 2                ;Film Temperature
 dt = to - tenv                      ;Temperature Difference
 
+mod = 0
+
 ;;Get Gas Properties
 ;------------------------------------------------------------------------------------------
-rho_n = 1.0331 * p/(r*tf) * na                  ;Number Density (1/m^3)
+rho_n = 1.0331 * p/(r*tf) * na                    ;Number Density (1/m^3)
 rho = rho_n * mw                                  ;Density (kg/m^3)
 
-l = kb*tf/(sqrt(2)*!pi*dk^2.*p)                 ;Mean Free Path (m)
+l = kb*tf/(sqrt(2)*!pi*dk^2.*p)                   ;Mean Free Path (m)
 
-mu = 0.9139*rho*l*sqrt(2*kb*tf/(!pi*mw))        ;Viscosity (N*s/m^2)
-nu = mu / rho                                   ;Kinemative Viscosity (m^2/s)
+mu = 0.9139*rho*l*sqrt(2*kb*tf/(!pi*mw))          ;Viscosity (N*s/m^2)
+nu = mu / rho                                     ;Kinemative Viscosity (m^2/s)
 
-k = 1.75 * rho*l*cv*sqrt(2*kb*tf/(!pi*mw))      ;Thermal Conductivity (W/m K)
+k = 1.75 * rho*l*cv*sqrt(2*kb*tf/(!pi*mw))        ;Thermal Conductivity (W/m K)
 
 ;;Verify Gas regime
 if 10.*MAX(l) GE MIN(l0) then print, 'Warning: mean free path is on the order of characteristic length!'
@@ -95,16 +97,23 @@ endcase
 ra = pr * gr                                              ;Rayleigh Number
 
 ;;Check flow regime
-if MAX(ra) GT 1e9 then print, 'Warning: Max Rayleigh No. (' + n2s(MAX(RA)) + ') > 1e9, entering turbulent regime'
-if MIN(ra) LT 1e-1 then print, 'Warning: Min Rayleigh No. (' + n2s(MIN(RA)) + ') < than 1e-1, convection becomes small'
+if MAX(ra) GT 1e12 then begin
+    print, 'Warning: Max Rayleigh No. (' + n2s(MAX(RA)) + ') > 1e9, entering turbulent regime'
+    mod = 1
+endif
+
+if MIN(ra) LT 1e-1 then begin 
+    print, 'Warning: Min Rayleigh No. (' + n2s(MIN(RA)) + ') < than 1e-1, convection becomes small'
+    stop
+endif
 
 ;;Calculate convective heat transfer coefficient
 ;------------------------------------------------------------------------------------------
 case geom of
     'vert_plate': begin
-        sel1 = where((ra LE 1e9) AND (ra GE 1e-1),count, complement=sel2, ncomplement=ncount)
-        if count GE 1 then h[sel1] = (k/l0)*(0.825 + 0.387*ra[sel1]^(1./6)/(1 + (0.492/pr)^(9./16))^(8./27))^2.
-        if ncount GE 1 then h[sel2] = (k/l0)*(0.68 + 0.67*ra[sel2]^(1./4)/(1 + (0.492/pr)^(9./16))^(4./9))
+        if mod then $
+        h = (k/l0)*(0.825 + 0.387*ra^(1./6)/(1 + (0.492/pr)^(9./16))^(8./27))^2. else $
+        h = (k/l0)*(0.68 + 0.67*ra^(1./4)/(1 + (0.492/pr)^(9./16))^(4./9))
     end
     'cylinder': h = 1
     'horiz_plate': h = 1
