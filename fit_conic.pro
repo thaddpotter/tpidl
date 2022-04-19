@@ -23,7 +23,7 @@ function fit_conic, data, roc, conic, guess=guess
     k = conic
     fitpoints = data
 
-    if not keyword_set(guess) then guess = [0.0,0.0,0.0,0.0,0.0]       ;Initial guess (Angles need to be within ~90 Deg)
+    if not keyword_set(guess) then guess = [0d,0d,0d,0d,0d]       ;Initial guess (Angles need to be within ~90 Deg)
 
     xbnd = transpose([[-180.0,180.0],$                          ;Variable bounds [Ax,Az,X,Y,Z]
                       [-180.0,180.0],$
