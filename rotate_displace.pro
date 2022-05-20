@@ -1,4 +1,4 @@
-function rotate_displace, input, angleX, angleY, angleZ, disp, inverse=inverse
+function rotate_displace, input, angleX, angleY, angleZ, disp, inverse=inverse, reg = reg
     ;------------------------------------------------------------------------------
     ;Rotates and displaces a set of points according to the following equation:
     ;r2 = R # r1 + r0, where:
@@ -8,15 +8,16 @@ function rotate_displace, input, angleX, angleY, angleZ, disp, inverse=inverse
     ;r0 -> Displacement vector
 
     ;Arguments:
-    ;input - 3 x N Array of Coordinates to be rotated and displaced (each point is a row vector)
+    ;input - 3 x N Array of Coordinates to be rotated and displaced (each point is a row)
     ;angleX - rotation angle about x (Degrees)
     ;angleY - rotation angle about y (Degrees)
     ;angleZ - rotation angle about z (Degrees)
     ;disp -   displacement vector [x,y,z]
 
     ;Keywords:
-    ;/inverse - Performs the inverse operation, undoing the original transformation:
+    ;inverse - Performs the inverse operation, undoing the original transformation:
     ;r2 = R^(-1)(r1 - r0)
+    ;reg- If set, will round small elements (LE 1e-8) to zero in the output array
 
     ;Returns:
     ;N x 3 Array of Coordinates in the new frame
@@ -47,11 +48,18 @@ function rotate_displace, input, angleX, angleY, angleZ, disp, inverse=inverse
     ;Forward Operation
     if ~keyword_set(inverse) then begin
         Rfull = Rz # Ry # Rx
-        return, (Rfull # input) + shift
+        Rout = (Rfull # input) + shift
 
     ;Reverse
     endif else begin
         Rfull = transpose(Rx) # transpose(Ry) # transpose(Rz)
-        return, Rfull # (input - shift)
+        Rout = Rfull # (input - shift)
     endelse
+
+    ;Regularize
+    if keyword_set(reg) then begin
+        Rout[where(abs(Rout) LE 1d-8,/NULL)] = 0
+    endif
+
+    return, Rout
 end
