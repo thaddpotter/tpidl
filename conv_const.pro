@@ -67,7 +67,7 @@ cp =  cv + (1000/mw0)*r
 tf = (to + tenv) / 2                ;Film Temperature
 dt = to - tenv                      ;Temperature Difference
 
-mod = 0
+mo = 0
 
 ;;Get Gas Properties
 ;------------------------------------------------------------------------------------------
@@ -99,7 +99,7 @@ ra = pr * gr                                              ;Rayleigh Number
 ;;Check flow regime
 if MAX(ra) GT 1e12 then begin
     print, 'Warning: Max Rayleigh No. (' + n2s(MAX(RA)) + ') > 1e9, entering turbulent regime'
-    mod = 1
+    mo = 1
 endif
 
 if MIN(ra) LT 1e-1 then begin 
@@ -111,7 +111,7 @@ endif
 ;------------------------------------------------------------------------------------------
 case geom of
     'vert_plate': begin
-        if mod then $
+        if mo then $
         h = (k/l0)*(0.825 + 0.387*ra^(1./6)/(1 + (0.492/pr)^(9./16))^(8./27))^2. else $
         h = (k/l0)*(0.68 + 0.67*ra^(1./4)/(1 + (0.492/pr)^(9./16))^(4./9))
     end
