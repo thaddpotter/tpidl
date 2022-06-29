@@ -33,8 +33,8 @@ function fit_conic, data, roc, conic, guess=guess
 
     gbnd = [0.0,0.0]                            ;Function bounds (objective function unbound)
     nobj = 0                                    ;Index of objective function
-    epstop = 1e-10                              ;Convergence Criteria
-    nstop = 10
+    epstop = 1e-8                               ;Convergence Criteria
+    nstop = 5
 
     CONSTRAINED_MIN, guess, xbnd, gbnd, nobj, 'conic_min_func', inform,EPSTOP=epstop, NSTOP=nstop
 
