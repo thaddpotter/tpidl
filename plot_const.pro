@@ -41,10 +41,8 @@ p_log_arr = 101325d/760*pt_log_arr                                              
 plotfile='h_vs_full_pressure.eps'
 mkeps,name= plotpath + plotfile
 
-h = conv_const(p_log_arr, t_obj, t_env, l,/quiet)
-plot_oi,pt_log_arr,h,position=[0.12,0.12,0.84,0.94],yrange=minmax(h),/xs,/ys,xtitle='Pressure (mmHg)',ytitle='Convective Cooling (W m^-2 K^-1)'
-
-print, minmax(h)
+h = conv_const(p_log_arr, t_obj, t_env, l,/quiet) * (t_obj-t_env)
+plot_oi,pt_log_arr,h,position=[0.12,0.12,0.84,0.94],xrange=[760,4],yrange=minmax(h),/xs,/ys,xtitle='Pressure (mmHg)',ytitle='Convective Cooling (W m^-2)'
 
 mkeps,/close
 print,'Wrote: '+plotpath+plotfile
