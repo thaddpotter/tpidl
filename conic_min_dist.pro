@@ -11,23 +11,6 @@ function conic_dist, in
     return, (x1 - x2)^2 + (y1 -y2)^2 + (z1 - conic_z(x2,y2,r,k))^2
 end
 
-function gradxy, in
-    ;Calculates the gradient of the square distance with respect to X and Y coordinates of the point on conic surface
-    ;Arguments: In -> [x2,y2] X and Y Coordinates of the point on the parabola
-    ;Returns: [gradx, grady] -> Partial derivatives with respect to x2, y2
-    COMMON dist_opt,x1,y1,z1
-    COMMON conic_opt,r,k
-
-    x2 = in[0]
-    y2 = in[1]
-
-    r2 = x2^2 + y2^2
-    f1 = sqrt(r^2 - (1+k)*r2)
-    f2 = (z1 - r2/( r + f1 )) / f1
-
-    return, [-2 * (x1 + x2*(f2-1)), -2 * (y1 + y2*(f2-1))]
-end
-
 function conic_min_dist, point
     ;Calculates the minimum square distance from a point to a given conic surface
 
@@ -47,11 +30,12 @@ function conic_min_dist, point
     z = DOUBLE(point[2])
 
     ;Setup
-    guess = [1d,1d] ;Initial Guess
-    gtol = 1e-7
+    guess = [1d,1d]  ;Initial Guess
+    ftol = 1e-3    ;Fractional Tolerance
+    xi = Identity(2) ;Starting Direction
 
     ;Minimize
-    DFPMIN, guess, Gtol, fmin, 'conic_dist', 'gradxy'
+    Powell, guess, xi, ftol, fmin, 'conic_dist', /DOUBLE
 
     return, fmin
 end
