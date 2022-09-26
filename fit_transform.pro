@@ -4,9 +4,9 @@ function transform_opt, params
     ;Performs rotation and displacement from input, and compares to output
     ;Uses sum of square distances as the minimizer
     ;For exact details on functions, see transform_3D.pro
-    ;(Uses /reg, /center)
+    ;(Uses /center)
 
-    ;Takes length 7 input vector: [Ax,Ay,Az, Dx,Dy,Dz]
+    ;Takes length 6 input vector: [Ax,Ay,Az, Dx,Dy,Dz]
     ;------------------------------------------------------------------------------
 
     ;Variable import/setup

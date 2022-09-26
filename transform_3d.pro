@@ -13,12 +13,13 @@ function transform_3d, input, angle, disp, scale=scale, center=center, inverse=i
     ;angle - Rotation Angle Vector [Ax,Ay,Az]
     ;disp -   displacement vector [x,y,z]
     ;scale - scaling constant [Defaults to 1]
+    ;center - Perform rotation about the another point [X,Y,Z]. Defaults to centroid of the point set. 
 
     ;Keywords:
     ;inverse - Perform the inverse operation, undoing the original transformation:
     ;r2 = R^(-1)(r1 - r0)
     ;reg- If set, will round small elements (LE 1e-8) to zero in the output array
-    ;center - Perform rotation about the centroid of the point set
+  
 
     ;Returns:
     ;N x 3 Array of Coordinates in the new frame
@@ -48,9 +49,12 @@ function transform_3d, input, angle, disp, scale=scale, center=center, inverse=i
     sz = size(input)
     trans = rebin(disp,3,sz[2])
 
-    ;Find centroid, make centering matrix
-    cent = [total(input[0,*]),total(input[1,*]),total(input[2,*])] / sz[2]
-    shift = rebin(cent,3,sz[2])
+    ;Make shift matrix for alternate rotation origin
+    if keyword_set(center) then begin
+        if n_elements(center) EQ 3 then cent = center else $
+        cent = [total(input[0,*]),total(input[1,*]),total(input[2,*])] / sz[2] 
+        shift = rebin(cent,3,sz[2])
+    endif
 
     ;Forward Operation
     if ~keyword_set(inverse) then begin
