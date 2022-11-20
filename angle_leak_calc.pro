@@ -7,17 +7,17 @@ function angle_leak, input
 
     misb = input(0) * (!dtor / 60d)                 ;Misalignment Angle (Arcminutes)
 
-    ang = input(1) * !dtor                          ;Orientation of Misalignment (CW from X)
+    ang = input(1) * !dtor                          ;Orientation of Misalignment (deg CCW from X)
 
-    rvec = [COS(ang - !Pi/2), SIN(ang - !Pi/2), 0]  ;Rotation Vector
+    rvec = [COS(ang + !Pi/2), SIN(ang + !Pi/2), 0]  ;Rotation Vector
 
     ;Get PICC basis
     picc = axis_angle(IDENTITY(3), rvec, misb)
 
-    ;Project WASP z onto PICC basis
+    ;Project WASP z onto PICC Frame
     picc_axis = picc ## [[0],[0],[1]]
 
-    ;Perform Rotation
+    ;Roll about WASP Z in Picture Frame
     roll = axis_angle(Identity(3), picc_axis, ampr)
 
     ;Decompose
@@ -38,7 +38,7 @@ theta_target = -3
 psi_target = 1
 
 ftol = 1e-7
-p = [2d, 45d]
+p = [2d, 215d]
 xi = Identity(2)
 
 powell, p,xi, ftol, fmin, 'angle_leak', /DOUBLE
