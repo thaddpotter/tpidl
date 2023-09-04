@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "../end2end"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../repo/picctest"
+		},
+		{
+			"path": "../repo/piccsim"
+		}
+	],
+	"settings": {}
+}

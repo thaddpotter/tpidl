@@ -5,6 +5,8 @@ print, 'loading packages ...'
 
 !PATH = !PATH + ':' + $
   expand_path('~/idl/end2end/') + ':' + $
+  expand_path('~/idl/end2end/old') + ':' + $
+  expand_path('~/idl/end2end/TD') + ':' + $
   expand_path('~/idl/scratch/') + ':' + $
   expand_path('~/idl/tpidl/') + ':' + $
   expand_path('~/idl/repo/astron/pro/') + ':' + $
