@@ -1,12 +1,13 @@
+compile_opt idl2
 print, 'loading packages ...'
 
-!QUIET = 1
+!quiet = 1
 !except = 2
 
-!PATH = !PATH + ':' + $
+!path = !path + ':' + $
   expand_path('~/idl/end2end/') + ':' + $
   expand_path('~/idl/end2end/old') + ':' + $
-  expand_path('~/idl/end2end/TD') + ':' + $
+  expand_path('~/idl/end2end/STOP') + ':' + $
   expand_path('~/idl/scratch/') + ':' + $
   expand_path('~/idl/tpidl/') + ':' + $
   expand_path('~/idl/repo/astron/pro/') + ':' + $
@@ -37,11 +38,11 @@ print, 'loading packages ...'
   expand_path('~/idl/repo/tdemidl/') + ':' + $
   expand_path('~/idl/repo/tdemidl/piaa/') + ':' + $
   expand_path('~/idl/repo/textoidl/') + ':' + $
-  expand_path('~/idl/repo/zodipic/')
-  
+  expand_path('~/idl/repo/zodipic/') + ':' + $
+  expand_path('~/idl/repo/piccoptomech/')
 
-paths = strsplit(!PATH, /extract, ':')
-print, n2s(n_elements(paths),format='(I)')+' packages loaded ...'
+paths = strsplit(!path, /extract, ':')
+print, n2s(n_elements(paths), format = '(I)') + ' packages loaded ...'
 delvar, path, index
 
-cgwindow_setdefs, adjustsize=0
+cgwindow_setdefs, adjustsize = 0

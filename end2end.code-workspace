@@ -7,10 +7,10 @@
 			"path": "."
 		},
 		{
-			"path": "../repo/picctest"
+			"path": "../repo/piccoptomech"
 		},
 		{
-			"path": "../repo/piccsim"
+			"path": "../repo/cbmidl"
 		}
 	],
 	"settings": {}
