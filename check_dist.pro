@@ -1,4 +1,7 @@
 pro check_dist, array1, array2
+  ; Takes two arrays of points (3xN) in meters
+  ; Finds the distance between points in the arrays, and subtracts them for comparison
+  ; This was used for troubleshooting the control points for zemax to ansys coordinate registration
   compile_opt idl2
   sz = size(array1)
   distarr = dblarr(sz[2])
