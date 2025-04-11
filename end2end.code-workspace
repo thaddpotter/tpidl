@@ -4,13 +4,7 @@
 			"path": "../end2end"
 		},
 		{
-			"path": "."
-		},
-		{
-			"path": "../repo/piccoptomech"
-		},
-		{
-			"path": "../repo/cbmidl"
+			"path": "../../python/PICTURE-C_Modeling"
 		}
 	],
 	"settings": {}
