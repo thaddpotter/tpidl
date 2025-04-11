@@ -1,37 +1,38 @@
 function fit_zernike, points
-;-------------------------------------------------------------
-;Fits zernike polynomials to a list of 3-D points
+  compile_opt idl2
+  ; -------------------------------------------------------------
+  ; Fits zernike polynomials to a list of 3-D points
 
-;Args:
-;points -> 3xN Array of points
+  ; Args:
+  ; points -> 3xN Array of points
 
-;Returns:
-;Coeff -> Vector containing coefficients of zernike functions
-;-------------------------------------------------------------
+  ; Returns:
+  ; Coeff -> Vector containing coefficients of zernike functions
+  ; -------------------------------------------------------------
 
-    ;Fitting Parameters
-    n_terms = 25                       ;Number of zernike terms to fit
+  ; Fitting Parameters
+  n_terms = 25 ; Number of zernike terms to fit
 
-    ;Get column vectors, init zernike matrix
-    x = DOUBLE(points[0,*])
-    y = DOUBLE(points[1,*])
-    z = TRANSPOSE(DOUBLE(points[2,*]))
-    zern_mat = dblarr(n_terms,n_elements(x))
+  ; Get column vectors, init zernike matrix
+  x = double(points[0, *])
+  y = double(points[1, *])
+  z = transpose(double(points[2, *]))
+  zern_mat = dblarr(n_terms, n_elements(x))
 
-    ;Construct matrix of zernike values
-    for k = 1,n_terms do begin
-        zern_mat[k-1,*] = tp_zernike( [x,y], k, xy=1)
-    endfor
+  ; Construct matrix of zernike values
+  for k = 1, n_terms do begin
+    zern_mat[k - 1, *] = tp_zernike([x, y], k, xy = 1)
+  endfor
 
-    ;Get singular values of zernike matrix
-    SVDC, zern_mat, w, u, v, /DOUBLE 
+  ; Get singular values of zernike matrix
+  svdc, zern_mat, w, u, v, /double
 
-    ;Regularization
-    ind = where(ABS(w) LE 1.0e-5)
-    w[ind] = 0
+  ; Regularization
+  ind = where(abs(w) le 1.0e-5)
+  w[ind] = 0
 
-    ;Solve for coefficients
-    coeff = svsol(u, w, v, z, /DOUBLE)
+  ; Solve for coefficients
+  coeff = svsol(u, w, v, z, /double)
 
-    return, coeff
+  return, coeff
 end

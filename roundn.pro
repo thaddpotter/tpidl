@@ -1,4 +1,4 @@
-;-------------------------------------------------------------
+; -------------------------------------------------------------
 ;+
 ; NAME:
 ;       ROUNDN
@@ -30,35 +30,35 @@
 ; routine is provided as is without any express or implied warranties
 ; whatsoever.  Other limitations apply as described in the file disclaimer.txt.
 ;-
-;-------------------------------------------------------------
-	function roundn, v1, n, string=string, format=fmt, help=hlp
- 
-	if (n_params(0) lt 1) or keyword_set(hlp) then begin
-	  print,' Round values to n decimal places.'
-	  print,' v2 = roundn(v1, n)'
-	  print,'   v1 = input value (may be an array).                in'
-	  print,'   n = number of decimal places to round to (def=0).  in'
-	  print,'   v2 = returned rounded value(s).                    out'
-	  print,' Keywords:'
-	  print,'   /STRING return value(s) as string(s).'
-	  print,'   FORMAT=fmt  Format to use with /STRING instead of default.'
-	  print,' Note: v2 has same data type as v1.  Giving an incorrect'
-	  print,'   format may give invalid rounding.'
-	  return,''
-	endif
- 
-	if n_elements(n) eq 0 then n=0
- 
-	typ = size(v1,/type)
- 
-	v2 = fix(round(v1*10D0^n,/L64)/10d0^n, type=typ)
- 
-	if keyword_set(string) then begin
-	  if n_elements(fmt) eq 0 then $
-	    if n le 0 then fmt='(I22)' else fmt='(F30.'+strtrim(n,2)+')'
-	  v2 = strtrim(string(v2,form=fmt),2)
-	endif
- 
-	return, v2
- 
-	end
+; -------------------------------------------------------------
+function roundn, v1, n, string = string, format = fmt, help = hlp
+  compile_opt idl2
+
+  if (n_params(0) lt 1) or keyword_set(hlp) then begin
+    print, ' Round values to n decimal places.'
+    print, ' v2 = roundn(v1, n)'
+    print, '   v1 = input value (may be an array).                in'
+    print, '   n = number of decimal places to round to (def=0).  in'
+    print, '   v2 = returned rounded value(s).                    out'
+    print, ' Keywords:'
+    print, '   /STRING return value(s) as string(s).'
+    print, '   FORMAT=fmt  Format to use with /STRING instead of default.'
+    print, ' Note: v2 has same data type as v1.  Giving an incorrect'
+    print, '   format may give invalid rounding.'
+    return, ''
+  endif
+
+  if n_elements(n) eq 0 then n = 0
+
+  typ = size(v1, /type)
+
+  v2 = fix(round(v1 * 10d0 ^ n, /l64) / 10d0 ^ n, type = typ)
+
+  if keyword_set(string) then begin
+    if n_elements(fmt) eq 0 then $
+      if n le 0 then fmt = '(I22)' else fmt = '(F30.' + strtrim(n, 2) + ')'
+    v2 = strtrim(string[v2, form = fmt], 2)
+  endif
+
+  return, v2
+end
